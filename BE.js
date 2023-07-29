@@ -18,6 +18,21 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
+app.use((req, res, next) => {
+    const timestamp = new Date().toISOString();
+    const origin = req.get('origin') || 'Unknown Origin';
+
+    console.log(`----------------------------------------------------------------`);
+    console.log(`Timestamp: ${timestamp}`);
+    console.log(`Origin: ${origin}`);
+    console.log(`Method: ${req.method}`);
+    console.log(`Path: ${req.path}`);
+    console.log(`Request Body: ${JSON.stringify(req.body)}`);
+    console.log(`----------------------------------------------------------------`);
+
+    next();
+});
+
 
 const usersFilePath = './users.json';
 
