@@ -254,8 +254,6 @@ app.post("/addVehicle", (req, res) => {
         percent: percent,
       };
 
-      console.log(newVehicle);
-
       // Find the user and update their assignedVehicle property
       const users = readUsersFile();
       const updatedUsers = users.map((user) => {
