@@ -286,7 +286,7 @@ app.post("/removeVehicle", (req, res) => {
       const decoded = jwt.verify(token, JWT_SECRET_KEY);
 
 
-      // Find the user and update their assignedVehicle property
+      // Find the user and remove their assignedVehicle property
       const users = readUsersFile();
       const updatedUsers = users.map((user) => {
         if (user.username === decoded.username) {
