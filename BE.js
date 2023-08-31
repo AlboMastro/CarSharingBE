@@ -80,6 +80,7 @@ app.post("/register", async (req, res) => {
       username,
       password: hashedPassword,
       assignedVehicle: {},
+      vehicleHistory: []
     };
     await saveUser(newUser);
     res.json({ message: "Registration successful" });
@@ -88,6 +89,19 @@ app.post("/register", async (req, res) => {
     console.log(error);
   }
 });
+
+const generateVehicleHistory = () => {
+  let vehicleHistory = [];
+  for (let i = 1; i < 90; i++) {
+    let historyEntry = {
+      day: new Date() - i,
+      vehicle: chooseVehicleType(),
+      Kilometres: Math.random() * 50
+    };
+    vehicleHistory.push(historyEntry);
+  }
+  return vehicleHistory;
+}
 
 // User login
 app.post("/login", async (req, res) => {
@@ -103,6 +117,7 @@ app.post("/login", async (req, res) => {
             id: user.id,
             username: user.username,
             assignedVehicle: user.assignedVehicle,
+            vehicleHistory: generateVehicleHistory()
           },
           JWT_SECRET_KEY
         );
@@ -149,6 +164,25 @@ app.get("/profile", (req, res) => {
   }
 });
 
+// Vehicle type
+const chooseVehicleType = () => {
+  let randomInt = Math.floor(Math.random() * 3);
+
+  switch (randomInt) {
+    case 0:
+      vehicle = "car";
+      break;
+    case 1:
+      vehicle = "motorbike";
+      break;
+    case 2:
+      vehicle = "scooter";
+      break;
+    default:
+      console.log("There was an error");
+  }
+};
+
 const generateVehicles = (lat, lng, radius) => {
   const vehicles = [];
   const toRadians = (degrees) => {
@@ -172,7 +206,7 @@ const generateVehicles = (lat, lng, radius) => {
 
     const newLat = Math.asin(
       Math.sin(latInRadians) * Math.cos(distance) +
-        Math.cos(latInRadians) * Math.sin(distance) * Math.cos(randomAngle)
+      Math.cos(latInRadians) * Math.sin(distance) * Math.cos(randomAngle)
     );
     const newLng =
       lngInRadians +
@@ -180,25 +214,6 @@ const generateVehicles = (lat, lng, radius) => {
         Math.sin(randomAngle) * Math.sin(distance) * Math.cos(latInRadians),
         Math.cos(distance) - Math.sin(latInRadians) * Math.sin(newLat)
       );
-
-    // Vehicle type
-    const chooseVehicleType = () => {
-      let randomInt = Math.floor(Math.random() * 3);
-
-      switch (randomInt) {
-        case 0:
-          vehicle = "car";
-          break;
-        case 1:
-          vehicle = "motorbike";
-          break;
-        case 2:
-          vehicle = "scooter";
-          break;
-        default:
-          console.log("There was an error");
-      }
-    };
     chooseVehicleType();
 
     vehicles.push({
@@ -277,7 +292,7 @@ app.post("/removeVehicle", (req, res) => {
   const token = req.headers.authorization
     ? req.headers.authorization.split(" ")[1]
     : undefined;
-  
+
   if (token) {
     try {
       // Verify the token and extract user information
